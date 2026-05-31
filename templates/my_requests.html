@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}My Requests - FoodRescue{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in-up">
+    <!-- Header Page Actions -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <h2 class="fw-bold mb-0 text-dark">My Requests</h2>
+            </div>
+            <p class="text-muted mb-0 ms-4">Track progress and coordination status of your active food claims</p>
+        </div>
+        <div>
+            <span class="badge bg-info-subtle text-info py-2 px-3 fw-bold rounded-pill border border-info">
+                {{ reqs | length }} Request(s) Total
+            </span>
+        </div>
+    </div>
+
+    <!-- Timeline/Card Grid for Requests -->
+    {% if reqs %}
+        <div class="row g-4">
+            {% for r in reqs %}
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 {% if r.request_status == 'Pending' %}border-start border-4 border-primary{% elif r.request_status == 'Accepted' %}border-start border-4 border-warning{% elif r.request_status == 'Completed' %}border-start border-4 border-success{% else %}border-start border-4 border-danger{% endif %}">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                <!-- Details Column -->
+                                <div class="col-lg-4 mb-4 mb-lg-0">
+                                    <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">Requested Food</div>
+                                    <h4 class="fw-bold text-dark mb-1">{{ r.food_name }}</h4>
+                                    <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
+                                        <span class="badge bg-light text-dark fw-semibold">Quantity: {{ r.quantity }}</span>
+                                        <span class="text-muted small"><i class="bi bi-geo-alt me-1 text-danger"></i>{{ r.location }}</span>
+                                    </div>
+                                    <div class="mt-3 text-xs text-muted" style="font-size: 0.8rem;">
+                                        <strong>Donor Organization:</strong> {{ r.donor_name }}
+                                    </div>
+                                    <div class="text-xs text-muted" style="font-size: 0.8rem;">
+                                        <strong>Claim Submitted:</strong> {{ r.requested_at.strftime('%d-%m-%Y %I:%M %p') if r.requested_at.strftime else r.requested_at }}
+                                    </div>
+                                </div>
+
+                                <!-- Status Timeline Progress Column -->
+                                <div class="col-lg-5 mb-4 mb-lg-0">
+                                    <div class="d-flex justify-content-between align-items-center position-relative my-2 px-2" style="max-width: 400px; margin: 0 auto;">
+                                        <!-- Line Connector Background -->
+                                        <div class="position-absolute" style="top: 15px; left: 10%; right: 10%; height: 3px; background-color: var(--border-color); z-index: 1;"></div>
+                                        
+                                        <!-- Line Connector Active -->
+                                        {% set active_width = '0%' %}
+                                        {% if r.request_status == 'Accepted' %}{% set active_width = '50%' %}{% elif r.request_status == 'Completed' %}{% set active_width = '100%' %}{% endif %}
+                                        <div class="position-absolute" style="top: 15px; left: 10%; width: {{ active_width }}; height: 3px; background-color: var(--primary); z-index: 1; transition: width 0.3s ease;"></div>
+
+                                        <!-- Step 1: Requested -->
+                                        <div class="text-center position-relative" style="z-index: 2; width: 60px;">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto text-white" style="width: 32px; height: 32px; background-color: var(--primary);">
+                                                <i class="bi bi-send-fill" style="font-size: 0.8rem;"></i>
+                                            </div>
+                                            <span class="d-block small mt-1 fw-bold text-muted" style="font-size: 0.7rem;">Sent</span>
+                                        </div>
+
+                                        <!-- Step 2: Accepted -->
+                                        {% set step2_bg = 'var(--primary)' if r.request_status in ['Accepted', 'Completed'] else 'var(--border-color)' %}
+                                        <div class="text-center position-relative" style="z-index: 2; width: 70px;">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto text-white" style="width: 32px; height: 32px; background-color: {{ step2_bg }};">
+                                                <i class="bi bi-hand-thumbs-up-fill" style="font-size: 0.8rem;"></i>
+                                            </div>
+                                            <span class="d-block small mt-1 fw-bold text-muted" style="font-size: 0.7rem;">Approved</span>
+                                        </div>
+
+                                        <!-- Step 3: Completed -->
+                                        {% set step3_bg = 'var(--primary)' if r.request_status == 'Completed' else 'var(--border-color)' %}
+                                        <div class="text-center position-relative" style="z-index: 2; width: 70px;">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto text-white" style="width: 32px; height: 32px; background-color: {{ step3_bg }};">
+                                                <i class="bi bi-check-circle-fill" style="font-size: 0.8rem;"></i>
+                                            </div>
+                                            <span class="d-block small mt-1 fw-bold text-muted" style="font-size: 0.7rem;">Rescued</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Status Badge & Pickup instructions Column -->
+                                <div class="col-lg-3 text-lg-end">
+                                    <div class="mb-2">
+                                        {% set status_class = 'badge-status-requested' if r.request_status == 'Pending' else ('badge-status-accepted' if r.request_status == 'Accepted' else ('badge-status-completed' if r.request_status == 'Completed' else 'badge-status-rejected')) %}
+                                        <span class="badge-status {{ status_class }}">{{ r.request_status }}</span>
+                                    </div>
+                                    
+                                    {% if r.request_status == 'Accepted' %}
+                                        <div class="alert alert-warning p-2 small border-0 text-start mt-2 mb-0" style="font-size: 0.8rem;">
+                                            <i class="bi bi-geo-alt-fill text-warning fs-6"></i>
+                                            <div>
+                                                <strong>Pickup Address:</strong><br>
+                                                {{ r.pickup_address }}
+                                            </div>
+                                        </div>
+                                    {% elif r.request_status == 'Completed' %}
+                                        <div class="text-success small fw-semibold mt-2">
+                                            <i class="bi bi-heart-fill"></i> Thank you for rescuing food!
+                                        </div>
+                                    {% elif r.request_status == 'Pending' %}
+                                        <div class="text-muted small mt-2">
+                                            Awaiting approval from the donor.
+                                        </div>
+                                    {% else %}
+                                        <div class="text-danger small mt-2">
+                                            This claim has been rejected.
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card p-5 text-center shadow-sm border-0">
+            <span class="fs-1 d-block mb-3">📋</span>
+            <h5 class="fw-bold text-dark">No Food Claimed Yet</h5>
+            <p class="text-muted small">You haven't requested any food listings. Start browsing active donations!</p>
+            <a href="{{ url_for('available_food') }}" class="btn btn-success btn-sm mt-2">View Available Food</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

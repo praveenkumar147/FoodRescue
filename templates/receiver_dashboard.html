@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Receiver Dashboard - FoodRescue{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center animate-fade-in-up" style="min-height: 70vh;">
+    <div class="col-12 col-md-10 col-lg-8">
+        <div class="card shadow-lg border-0">
+            <!-- Card Header -->
+            <div class="card-header-gradient text-center py-4">
+                <span class="fs-1 mb-2 d-block">🙋‍♂️</span>
+                <h3 class="fw-bold mb-0 text-white">Receiver Dashboard</h3>
+                <p class="text-white-50 mb-0 mt-1 small">Discover surplus food listings and manage your claims</p>
+            </div>
+            
+            <div class="card-body p-4 p-md-5">
+                <div class="row g-4 mb-4">
+                    <!-- Metric Box 1: Available Food -->
+                    <div class="col-md-6">
+                        <div class="card p-4 text-center border-top border-5 border-success h-100">
+                            <span class="fs-1 mb-2 d-block">🥗</span>
+                            <h5 class="fw-bold text-dark mb-1">Available Surplus</h5>
+                            <h2 class="fw-extrabold text-success mb-2">{{ foods.c }}</h2>
+                            <p class="text-muted small flex-grow-1">Fresh meals, breads, and grocery packets waiting to be claimed.</p>
+                            <a href="{{ url_for('available_food') }}" class="btn btn-success w-100 mt-2">
+                                <i class="bi bi-search me-1"></i> Browse & Claim Food
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Metric Box 2: My Requests -->
+                    <div class="col-md-6">
+                        <div class="card p-4 text-center border-top border-5 border-info h-100">
+                            <span class="fs-1 mb-2 d-block">🚚</span>
+                            <h5 class="fw-bold text-dark mb-1">My Requests</h5>
+                            <h2 class="fw-extrabold text-info mb-2">{{ reqs.c }}</h2>
+                            <p class="text-muted small flex-grow-1">Track status, pick-up approvals, and completion timelines of your claims.</p>
+                            <a href="{{ url_for('my_requests') }}" class="btn btn-outline-info w-100 mt-2">
+                                <i class="bi bi-card-checklist me-1"></i> View My Requests
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Help Banner -->
+                <div class="alert alert-info border-0 p-3 small mb-0">
+                    <div class="d-flex gap-2">
+                        <i class="bi bi-info-circle-fill fs-5 text-info"></i>
+                        <div>
+                            <h6 class="fw-bold text-info mb-1">How Food Collection Works:</h6>
+                            <ul class="mb-0 ps-3 text-muted">
+                                <li>Filter available listings by your location area.</li>
+                                <li>Submit a request along with a friendly message detailing your pickup window.</li>
+                                <li>Wait for the donor to Accept, and coordinate travel to the pickup address.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

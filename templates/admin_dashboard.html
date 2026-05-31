@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - FoodRescue{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center animate-fade-in-up">
+    <div class="col-12 col-lg-11">
+        <!-- Header Section -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <h2 class="fw-bold mb-1 text-dark"><i class="bi bi-shield-lock-fill text-success me-1"></i> Admin Dashboard</h2>
+                <p class="text-muted mb-0">System metrics and platform activity status</p>
+            </div>
+            <span class="badge bg-dark py-2 px-3 fw-bold rounded-pill text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">
+                <i class="bi-shield-check me-1"></i> Control Panel
+            </span>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="row g-4 mb-4">
+            <!-- Total Users Card -->
+            <div class="col-12 col-md-4">
+                <div class="card p-4 h-100 border-0 border-top border-5 border-success shadow-sm">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1 small fw-bold">Total Accounts</h6>
+                            <h2 class="fw-bold mb-0 text-success">{{ data.users.c }}</h2>
+                        </div>
+                        <span class="fs-1">👥</span>
+                    </div>
+                    <p class="text-muted small mb-0">Registered donors, receivers, and administrative accounts.</p>
+                </div>
+            </div>
+
+            <!-- Total Donations Card -->
+            <div class="col-12 col-md-4">
+                <div class="card p-4 h-100 border-0 border-top border-5 border-info shadow-sm">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1 small fw-bold">Total Donations</h6>
+                            <h2 class="fw-bold mb-0 text-info">{{ data.donations.c }}</h2>
+                        </div>
+                        <span class="fs-1">🍲</span>
+                    </div>
+                    <p class="text-muted small mb-0">Total surplus food items published to the database system.</p>
+                </div>
+            </div>
+
+            <!-- Total Requests Card -->
+            <div class="col-12 col-md-4">
+                <div class="card p-4 h-100 border-0 border-top border-5 border-warning shadow-sm">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1 small fw-bold">Rescue Claims</h6>
+                            <h2 class="fw-bold mb-0 text-warning">{{ data.requests.c }}</h2>
+                        </div>
+                        <span class="fs-1">📦</span>
+                    </div>
+                    <p class="text-muted small mb-0">Total claim requests submitted by receivers for food rescue.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Management Actions -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="card p-4 h-100 shadow-sm border-0 d-flex flex-row align-items-center gap-3">
+                    <div class="p-3 rounded bg-success-subtle text-success fs-3">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="fw-bold text-dark mb-1">User Account Directory</h5>
+                        <p class="text-muted small mb-0">Manage registered contacts, modify profiles, or remove accounts.</p>
+                        <a href="{{ url_for('admin_users') }}" class="btn btn-success btn-sm mt-3 px-3 shadow-sm">
+                            Manage Users <i class="bi bi-arrow-right-short ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card p-4 h-100 shadow-sm border-0 d-flex flex-row align-items-center gap-3">
+                    <div class="p-3 rounded bg-info-subtle text-info fs-3">
+                        <i class="bi bi-egg-fried"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="fw-bold text-dark mb-1">Donation Audit History</h5>
+                        <p class="text-muted small mb-0">Track listed surplus food items, expiry countdowns, and claims.</p>
+                        <a href="{{ url_for('admin_donations') }}" class="btn btn-outline-info btn-sm mt-3 px-3">
+                            Audit Donations <i class="bi bi-arrow-right-short ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Dashboard Split -->
+        <div class="row g-4">
+            <!-- Left Side: Recent Registered Users -->
+            <div class="col-12 col-xl-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold text-dark mb-0"><i class="bi bi-people text-success me-2"></i> Recent Registrations</h5>
+                        <a href="{{ url_for('admin_users') }}" class="btn btn-link text-success btn-sm fw-bold text-decoration-none p-0">View All</a>
+                    </div>
+                    <div class="card-body p-0">
+                        {% if recent_users %}
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0" style="font-size: 0.9rem;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Role</th>
+                                            <th>Joined Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for u in recent_users %}
+                                            <tr>
+                                                <td>
+                                                    <div class="fw-bold text-dark">{{ u.name }}</div>
+                                                    <div class="text-muted small" style="font-size: 0.75rem;">{{ u.email }}</div>
+                                                </td>
+                                                <td>
+                                                    {% if u.role == 'donor' %}
+                                                        <span class="badge bg-success-subtle text-success text-capitalize fw-bold">{{ u.role }}</span>
+                                                    {% elif u.role == 'receiver' %}
+                                                        <span class="badge bg-info-subtle text-info text-capitalize fw-bold">Receiver</span>
+                                                    {% else %}
+                                                        <span class="badge bg-dark-subtle text-dark text-capitalize fw-bold">{{ u.role }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td><span class="text-muted small">{{ u.dt }}</span></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <p class="text-muted mb-0 small">No recent registrations.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Recent Donations -->
+            <div class="col-12 col-xl-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold text-dark mb-0"><i class="bi bi-clock-history text-info me-2"></i> Recent Donations</h5>
+                        <a href="{{ url_for('admin_donations') }}" class="btn btn-link text-info btn-sm fw-bold text-decoration-none p-0">View All</a>
+                    </div>
+                    <div class="card-body p-0">
+                        {% if recent_donations %}
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0" style="font-size: 0.9rem;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Food Item</th>
+                                            <th>Donor</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for d in recent_donations %}
+                                            <tr>
+                                                <td class="fw-bold text-dark">{{ d.food_name }}</td>
+                                                <td><span class="small text-muted">{{ d.donor_name }}</span></td>
+                                                <td>
+                                                    {% set status_class = 'badge-status-available' if d.status == 'Available' else ('badge-status-requested' if d.status == 'Requested' else ('badge-status-accepted' if d.status == 'Accepted' else ('badge-status-completed' if d.status == 'Completed' else 'badge-status-rejected'))) %}
+                                                    <span class="badge-status {{ status_class }} py-1 px-2" style="font-size: 0.7rem; border-radius: 10px;">{{ d.status }}</span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <p class="text-muted mb-0 small">No recent food donations.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

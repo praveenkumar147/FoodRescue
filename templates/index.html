@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="animate-fade-in-up">
+    <!-- Hero Section -->
+    <div class="hero-section text-center text-lg-start d-flex align-items-center">
+        <div class="row align-items-center w-100 py-3">
+            <div class="col-lg-7 px-lg-4 mb-4 mb-lg-0">
+                <span class="badge bg-success-subtle text-success border border-success mb-3 px-3 py-2 fw-bold text-uppercase" style="font-size: 0.8rem; letter-spacing: 1px;">
+                    🌱 Waste Less, Feed More
+                </span>
+                <h1 class="hero-title mb-3">
+                    Rescuing Food,<br>
+                    <span class="hero-highlight">Feeding Communities</span>
+                </h1>
+                <p class="hero-subtitle mb-4">
+                    Connecting local businesses, restaurants, and individuals with surplus edible food to local charities, shelters, and families in need. Together, let's eliminate food waste.
+                </p>
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
+                    <a href="{{ url_for('register') }}" class="btn btn-success btn-lg px-4 py-3 shadow-lg">
+                        <i class="bi bi-rocket-takeoff me-2"></i> Join as Member
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-success btn-lg px-4 py-3">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Login to Portal
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 text-center d-none d-lg-block">
+                <!-- Large Elegant Icon Display -->
+                <div class="p-5 bg-white rounded-circle shadow-lg border inline-block" style="width: 320px; height: 320px; margin: 0 auto; display: flex; align-items: center; justify-content: center; animation: pulse 4s infinite;">
+                    <div style="font-size: 8.5rem;">🥗</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Impact Stats Grid -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-gift-fill text-success"></i></div>
+                <div class="stat-num text-success">15,400+</div>
+                <div class="stat-label">Meals Saved from Landfills</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-people-fill text-info"></i></div>
+                <div class="stat-num text-info">380+</div>
+                <div class="stat-label">Verified Donors & Receivers</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-hourglass-split text-warning"></i></div>
+                <div class="stat-num text-warning">2.4 Hours</div>
+                <div class="stat-label">Average Rescue Pickup Time</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Roles Highlight -->
+    <h2 class="text-center fw-bold mb-4 mt-5 text-dark">Platform Users & Roles</h2>
+    <p class="text-center text-muted mb-5 mx-auto" style="max-width: 600px;">
+        FoodRescue serves three critical pillars of the local community, working in unison to manage donation workflows smoothly.
+    </p>
+
+    <div class="row g-4 mb-5">
+        <!-- Donor -->
+        <div class="col-md-4">
+            <div class="card h-100 p-4 border-top border-5 border-success">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="fs-1 me-3">🏢</span>
+                    <div>
+                        <h4 class="fw-bold mb-0">Donors</h4>
+                        <small class="text-muted">Restaurants, Hotels, Homes</small>
+                    </div>
+                </div>
+                <p class="text-muted flex-grow-1">
+                    Easily upload details about your surplus edible foods, specify pickup details, and set expiration timers.
+                </p>
+                <a href="{{ url_for('register') }}" class="btn btn-outline-success btn-sm w-100 mt-2">Become a Donor</a>
+            </div>
+        </div>
+
+        <!-- Receiver -->
+        <div class="col-md-4">
+            <div class="card h-100 p-4 border-top border-5 border-info">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="fs-1 me-3">🙋‍♂️</span>
+                    <div>
+                        <h4 class="fw-bold mb-0">Receivers</h4>
+                        <small class="text-muted">Shelters, Food Banks, Families</small>
+                    </div>
+                </div>
+                <p class="text-muted flex-grow-1">
+                    Search active local donations, filter by category/location, view dynamic countdown timers, and request claims.
+                </p>
+                <a href="{{ url_for('register') }}" class="btn btn-outline-info btn-sm w-100 mt-2">Become a Receiver</a>
+            </div>
+        </div>
+
+        <!-- Admin -->
+        <div class="col-md-4">
+            <div class="card h-100 p-4 border-top border-5 border-dark">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="fs-1 me-3">⚙️</span>
+                    <div>
+                        <h4 class="fw-bold mb-0">Administrators</h4>
+                        <small class="text-muted">Platform Management</small>
+                    </div>
+                </div>
+                <p class="text-muted flex-grow-1">
+                    Oversee registration validation, audit food listings, and compile key platform analytics to drive rescue impact.
+                </p>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-dark btn-sm w-100 mt-2">Access Portal</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

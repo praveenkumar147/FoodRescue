@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Register - FoodRescue{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center animate-fade-in-up" style="min-height: 80vh;">
+    <div class="col-12 col-md-9 col-lg-7">
+        <div class="card shadow-lg border-0 my-3">
+            <div class="card-header-gradient text-center py-4">
+                <span class="fs-1 mb-2 d-block">🤝</span>
+                <h3 class="fw-bold mb-0 text-white">Create An Account</h3>
+                <p class="text-white-50 mb-0 mt-1 small">Join us and start making a local difference today</p>
+            </div>
+            
+            <div class="card-body p-4 p-md-5">
+                <form method="post" novalidate autocomplete="off">
+                    <div class="row">
+                        <!-- Left column: Account basics -->
+                        <div class="col-md-6 border-end-md">
+                            <h5 class="fw-bold mb-3 text-success"><i class="bi bi-person-badge-fill me-1"></i> Account Details</h5>
+                            
+                            <!-- Name input -->
+                            <div class="mb-3">
+                                <label for="nameInput" class="form-label">Name/Organization</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                                    <input id="nameInput" name="name" class="form-control" autocomplete="off" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Email input -->
+                            <div class="mb-3">
+                                <label for="emailInput" class="form-label">Email Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                                    <input id="emailInput" name="email" type="email" class="form-control" autocomplete="off" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Password input -->
+                            <div class="mb-3">
+                                <label for="passwordInput" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-shield-lock"></i></span>
+                                    <input id="passwordInput" name="password" type="password" class="form-control" autocomplete="off" required>
+                                </div>
+                            </div>
+
+                            <!-- Role selection -->
+                            <div class="mb-3">
+                                <label for="roleInput" class="form-label">Select Your Role</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-tag"></i></span>
+                                    <select id="roleInput" name="role" class="form-select" autocomplete="off" required>
+                                        <option value="donor">Donor (Restaurant, Hotel, Home)</option>
+                                        <option value="receiver">Receiver (Shelter, Charity, Food Bank)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right column: Contact information -->
+                        <div class="col-md-6 mt-4 mt-md-0 ps-md-4">
+                            <h5 class="fw-bold mb-3 text-info"><i class="bi bi-geo-alt-fill me-1"></i> Contact Info</h5>
+                            
+                            <!-- Phone input -->
+                            <div class="mb-3">
+                                <label for="phoneInput" class="form-label">Phone Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-telephone"></i></span>
+                                    <input id="phoneInput" name="phone" type="tel" class="form-control" autocomplete="off">
+                                </div>
+                            </div>
+                            
+                            <!-- Address input -->
+                            <div class="mb-3">
+                                <label for="addressInput" class="form-label">Physical Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-building"></i></span>
+                                    <textarea id="addressInput" name="address" class="form-control" rows="4" autocomplete="off"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Register Button -->
+                    <div class="mt-4 text-center">
+                        <button type="submit" class="btn btn-success px-5 py-2.5 fs-6 shadow-md w-100 w-md-auto">
+                            <i class="bi bi-person-plus-fill me-2"></i> Register Account
+                        </button>
+                        <p class="small text-muted mt-3 mb-0">Already have an account? 
+                            <a href="{{ url_for('login') }}" class="text-success fw-bold text-decoration-none">Login here</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

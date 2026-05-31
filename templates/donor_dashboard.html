@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Donor Dashboard - FoodRescue{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in-up">
+    <!-- Page Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1 text-dark">Donor Dashboard</h2>
+            <p class="text-muted mb-0">Manage your surplus food donations and monitor requests</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-success shadow-sm" href="{{ url_for('add_food') }}">
+                <i class="bi bi-plus-circle me-1"></i> Post New Food
+            </a>
+            <a class="btn btn-outline-success shadow-sm" href="{{ url_for('manage_requests') }}">
+                <i class="bi bi-chat-left-text me-1"></i> Manage Requests
+            </a>
+        </div>
+    </div>
+
+    <!-- Compute stats using Jinja2 -->
+    {% set ns = namespace(available=0, requested=0, accepted=0, completed=0, expired=0) %}
+    {% for d in donations %}
+        {% if d.status == 'Available' %}
+            {% set ns.available = ns.available + 1 %}
+        {% elif d.status == 'Requested' %}
+            {% set ns.requested = ns.requested + 1 %}
+        {% elif d.status == 'Accepted' %}
+            {% set ns.accepted = ns.accepted + 1 %}
+        {% elif d.status == 'Completed' %}
+            {% set ns.completed = ns.completed + 1 %}
+        {% endif %}
+    {% endfor %}
+
+    <!-- Metric Cards Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card p-3 border-start border-4 border-success">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase mb-1 small fw-bold">Active Listings</h6>
+                        <h3 class="fw-bold mb-0 text-success">{{ ns.available }}</h3>
+                    </div>
+                    <span class="fs-2">📦</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card p-3 border-start border-4 border-primary">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase mb-1 small fw-bold">Open Claims</h6>
+                        <h3 class="fw-bold mb-0 text-primary">{{ ns.requested }}</h3>
+                    </div>
+                    <span class="fs-2">🔔</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card p-3 border-start border-4 border-warning">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase mb-1 small fw-bold">In Progress</h6>
+                        <h3 class="fw-bold mb-0 text-warning">{{ ns.accepted }}</h3>
+                    </div>
+                    <span class="fs-2">🚚</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card p-3 border-start border-4 border-info">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase mb-1 small fw-bold">Total Rescued</h6>
+                        <h3 class="fw-bold mb-0 text-info">{{ ns.completed }}</h3>
+                    </div>
+                    <span class="fs-2">❤️</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donations Table/Grid List -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-clock-history me-1 text-success"></i> My Donation History</h5>
+            <span class="badge bg-light text-dark fw-bold">{{ donations | length }} listing(s) total</span>
+        </div>
+        <div class="card-body p-0">
+            {% if donations %}
+                <div class="table-responsive">
+                    <table class="table table-custom align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Food Details</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Location</th>
+                                <th>Freshness Expiry</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in donations %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-dark">{{ d.food_name }}</div>
+                                        <div class="text-xs text-muted" style="font-size: 0.8rem;">Posted on: {{ d.created_at }}</div>
+                                    </td>
+                                    <td>
+                                        {% set type_class = 'type-veg' if d.food_type == 'Veg' else ('type-nonveg' if d.food_type == 'Non-Veg' else ('type-bakery' if d.food_type == 'Bakery' else 'type-other')) %}
+                                        <span class="food-type-icon {{ type_class }} me-1">
+                                            {% if d.food_type == 'Veg' %}🥦{% elif d.food_type == 'Non-Veg' %}🍗{% elif d.food_type == 'Bakery' %}🍰{% else %}🍱{% endif %}
+                                        </span>
+                                        <span class="small fw-semibold text-capitalize">{{ d.food_type }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-dark">{{ d.quantity }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="small text-muted"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ d.location }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column gap-1">
+                                            <div class="small fw-semibold text-dark">{{ d.exp }}</div>
+                                            <!-- ISO formatted date inside tag for js parsing -->
+                                            <div class="countdown-timer countdown-box" data-expiry="{{ d.expiry_datetime }}">
+                                                <i class="bi bi-hourglass-split"></i> <span>Calculating...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% set status_class = 'badge-status-available' if d.status == 'Available' else ('badge-status-requested' if d.status == 'Requested' else ('badge-status-accepted' if d.status == 'Accepted' else ('badge-status-completed' if d.status == 'Completed' else 'badge-status-rejected'))) %}
+                                        <span class="badge-status {{ status_class }}">{{ d.status }}</span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <span class="fs-1 d-block mb-3">🧺</span>
+                    <h5 class="fw-bold text-dark">No Food Posted Yet</h5>
+                    <p class="text-muted small">Help reduce waste by listing extra food from your kitchen or outlet.</p>
+                    <a class="btn btn-success btn-sm mt-2" href="{{ url_for('add_food') }}">Post Food Now</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function updateCountdowns() {
+        const timers = document.querySelectorAll('.countdown-timer');
+        const now = new Date().getTime();
+
+        timers.forEach(timer => {
+            const expiryStr = timer.getAttribute('data-expiry');
+            // Support multiple parsing variations
+            const expiryDate = new Date(expiryStr.replace(' ', 'T')).getTime();
+            const distance = expiryDate - now;
+
+            const span = timer.querySelector('span');
+
+            if (isNaN(distance) || distance < 0) {
+                span.textContent = 'Expired';
+                timer.className = 'countdown-timer countdown-box danger';
+            } else {
+                const hours = Math.floor(distance / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                let displayStr = '';
+                if (hours > 0) {
+                    displayStr += hours + 'h ';
+                }
+                displayStr += minutes + 'm ' + seconds + 's';
+
+                span.textContent = displayStr;
+
+                // Color coding by remaining time
+                if (hours < 3) {
+                    timer.className = 'countdown-timer countdown-box danger';
+                } else if (hours < 12) {
+                    timer.className = 'countdown-timer countdown-box warning';
+                } else {
+                    timer.className = 'countdown-timer countdown-box success';
+                }
+            }
+        });
+    }
+
+    // Run immediately and then tick every second
+    updateCountdowns();
+    setInterval(updateCountdowns, 1000);
+</script>
+{% endblock %}

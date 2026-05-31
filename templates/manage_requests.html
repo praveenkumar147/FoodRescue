@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Requests - FoodRescue{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in-up">
+    <!-- Header Page Actions -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <h2 class="fw-bold mb-0 text-dark">Manage Requests</h2>
+            </div>
+            <p class="text-muted mb-0 ms-4">Approve or complete pickup requests from local receivers</p>
+        </div>
+        <div>
+            <span class="badge bg-success-subtle text-success py-2 px-3 fw-bold rounded-pill border border-success">
+                {{ reqs | length }} Request(s) Received
+            </span>
+        </div>
+    </div>
+
+    <!-- Request Grid/Table -->
+    {% if reqs %}
+        <div class="row g-3">
+            {% for r in reqs %}
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 {% if r.request_status == 'Pending' %}border-start border-4 border-primary{% elif r.request_status == 'Accepted' %}border-start border-4 border-warning{% elif r.request_status == 'Completed' %}border-start border-4 border-success{% else %}border-start border-4 border-danger{% endif %}">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                <!-- Food details column -->
+                                <div class="col-lg-3 col-md-4 mb-3 mb-md-0">
+                                    <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">Food Item</div>
+                                    <h5 class="fw-bold text-dark mb-1">{{ r.food_name }}</h5>
+                                    <div class="d-flex align-items-center gap-2 mt-1">
+                                        <span class="badge bg-light text-dark fw-semibold" style="font-size: 0.8rem;">Qty: {{ r.quantity }}</span>
+                                    </div>
+                                    <div class="mt-2 text-xs text-muted" style="font-size: 0.8rem;">
+                                        <i class="bi bi-geo-alt me-1 text-danger"></i> {{ r.location }}
+                                    </div>
+                                </div>
+
+                                <!-- Receiver details column -->
+                                <div class="col-lg-3 col-md-4 mb-3 mb-md-0 border-start-md px-md-3">
+                                    <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">Requested By</div>
+                                    <div class="fw-bold text-dark mb-1">{{ r.receiver_name }}</div>
+                                    <a href="tel:{{ r.receiver_phone }}" class="text-decoration-none text-success small fw-semibold d-inline-flex align-items-center gap-1">
+                                        <i class="bi bi-telephone-fill"></i> {{ r.receiver_phone }}
+                                    </a>
+                                    <div class="mt-2 text-xs text-muted" style="font-size: 0.8rem;">
+                                        Requested at: {{ r.requested_at.strftime('%d-%m-%Y %I:%M %p') if r.requested_at.strftime else r.requested_at }}
+                                    </div>
+                                </div>
+
+                                <!-- Message note column -->
+                                <div class="col-lg-3 col-md-4 mb-3 mb-md-0 border-start-md px-md-3">
+                                    <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">Receiver's Note</div>
+                                    {% if r.message %}
+                                        <div class="bg-light p-2 rounded small text-dark border-start border-3 border-secondary" style="font-style: italic; font-size: 0.85rem;">
+                                            "{{ r.message }}"
+                                        </div>
+                                    {% else %}
+                                        <div class="text-muted small italic" style="font-size: 0.85rem;">No message provided.</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Status and actions column -->
+                                <div class="col-lg-3 text-lg-end mt-3 mt-lg-0 border-start-lg px-lg-3">
+                                    <div class="mb-3">
+                                        {% set status_class = 'badge-status-requested' if r.request_status == 'Pending' else ('badge-status-accepted' if r.request_status == 'Accepted' else ('badge-status-completed' if r.request_status == 'Completed' else 'badge-status-rejected')) %}
+                                        <span class="badge-status {{ status_class }}">{{ r.request_status }}</span>
+                                    </div>
+
+                                    <!-- Contextual actions -->
+                                    <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+                                        {% if r.request_status == 'Pending' %}
+                                            <form class="d-inline" method="post" action="{{ url_for('update_request', rid=r.id, action='accept') }}">
+                                                <button class="btn btn-sm btn-success px-3"><i class="bi bi-check-lg me-1"></i> Accept</button>
+                                            </form>
+                                            <form class="d-inline" method="post" action="{{ url_for('update_request', rid=r.id, action='reject') }}">
+                                                <button class="btn btn-sm btn-outline-danger px-3"><i class="bi bi-x-lg me-1"></i> Reject</button>
+                                            </form>
+                                        {% elif r.request_status == 'Accepted' %}
+                                            <form class="d-inline" method="post" action="{{ url_for('update_request', rid=r.id, action='complete') }}">
+                                                <button class="btn btn-sm btn-primary px-3"><i class="bi bi-bookmark-check-fill me-1"></i> Complete Rescue</button>
+                                            </form>
+                                            <form class="d-inline" method="post" action="{{ url_for('update_request', rid=r.id, action='reject') }}">
+                                                <button class="btn btn-sm btn-outline-danger px-2"><i class="bi bi-x-lg"></i> Cancel</button>
+                                            </form>
+                                        {% else %}
+                                            <span class="text-muted small">No action required</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card p-5 text-center shadow-sm border-0">
+            <span class="fs-1 d-block mb-3">🔔</span>
+            <h5 class="fw-bold text-dark">No Requests Received Yet</h5>
+            <p class="text-muted small">When receivers claim your food listings, their details and messages will show up here.</p>
+            <a href="{{ url_for('donor_dashboard') }}" class="btn btn-success btn-sm mt-2">Go to Dashboard</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

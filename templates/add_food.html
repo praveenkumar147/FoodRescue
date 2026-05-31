@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Post Surplus Food - FoodRescue{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center animate-fade-in-up">
+    <div class="col-12 col-lg-8">
+        <div class="card shadow-lg border-0 my-3">
+            <div class="card-header-gradient text-center py-4">
+                <span class="fs-1 mb-2 d-block">🍲</span>
+                <h3 class="fw-bold mb-0 text-white">Post Surplus Food</h3>
+                <p class="text-white-50 mb-0 mt-1 small">Share details of surplus edible food available for rescue</p>
+            </div>
+            
+            <div class="card-body p-4 p-md-5">
+                <form method="post" novalidate>
+                    <div class="row">
+                        <!-- Left column: Food Info -->
+                        <div class="col-md-6 border-end-md">
+                            <h5 class="fw-bold mb-3 text-success"><i class="bi bi-info-circle-fill me-1"></i> Food Details</h5>
+                                                      <!-- Food Name -->
+                            <div class="mb-3">
+                                <label for="foodName" class="form-label">Food Item Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-egg-fried"></i></span>
+                                    <input id="foodName" name="food_name" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Food Type -->
+                            <div class="mb-3">
+                                <label for="foodType" class="form-label">Food Category Type</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-filter"></i></span>
+                                    <select id="foodType" name="food_type" class="form-select">
+                                        <option value="Veg">🥦 Vegetarian</option>
+                                        <option value="Non-Veg">🍗 Non-Vegetarian</option>
+                                        <option value="Bakery">🍰 Bakery & Pastries</option>
+                                        <option value="Other">🍱 Other Meals / Groceries</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Quantity -->
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label">Available Quantity</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-boxes"></i></span>
+                                    <input id="quantity" name="quantity" class="form-control" required>
+                                </div>
+                            </div>
+ 
+                            <!-- Expiry Datetime -->
+                            <div class="mb-3">
+                                <label for="expiry" class="form-label">Freshness Expiry Time</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-clock"></i></span>
+                                    <input id="expiry" name="expiry_datetime" type="datetime-local" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+ 
+                        <!-- Right column: Pickup Info -->
+                        <div class="col-md-6 mt-4 mt-md-0 ps-md-4">
+                            <h5 class="fw-bold mb-3 text-info"><i class="bi bi-geo-alt-fill me-1"></i> Pickup Location</h5>
+                            
+                            <!-- Location (City/Area) -->
+                            <div class="mb-3">
+                                <label for="location" class="form-label">General Area / City Zone</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-geo"></i></span>
+                                    <input id="location" name="location" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Pickup Address (Detailed) -->
+                            <div class="mb-3">
+                                <label for="pickupAddress" class="form-label">Detailed Pickup Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-house"></i></span>
+                                    <textarea id="pickupAddress" name="pickup_address" class="form-control" rows="3" required></textarea>
+                                </div>
+                            </div>
+ 
+                            <!-- Description -->
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Additional Description / Notes</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-chat-text"></i></span>
+                                    <textarea id="description" name="description" class="form-control" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit & Back Buttons -->
+                    <div class="mt-4 border-top pt-4 text-end d-flex flex-column flex-sm-row justify-content-end gap-2">
+                        <a href="{{ url_for('donor_dashboard') }}" class="btn btn-outline-secondary order-2 order-sm-1">
+                            <i class="bi bi-x-circle me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success order-1 order-sm-2 px-4 shadow-sm">
+                            <i class="bi bi-check-circle me-1"></i> Publish Donation Listing
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

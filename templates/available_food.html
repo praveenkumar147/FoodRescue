@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Available Food Listings - FoodRescue{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in-up">
+    <!-- Header Page Actions -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <h2 class="fw-bold mb-0 text-dark">Available Food</h2>
+            </div>
+            <p class="text-muted mb-0 ms-4">Search and claim active surplus food donations in your neighborhood</p>
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="card p-3 shadow-sm border-0 mb-4 bg-white">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-12 col-md-9 col-lg-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-light text-muted"><i class="bi bi-search"></i></span>
+                    <input name="q" value="{{ q }}" class="form-control">
+                </div>
+            </div>
+            <div class="col-12 col-md-3 col-lg-2">
+                <button type="submit" class="btn btn-success w-100 py-2">
+                    <i class="bi bi-funnel me-1"></i> Filter Search
+                </button>
+            </div>
+        </form>
+        {% if q %}
+            <div class="mt-2 text-xs text-muted">
+                Showing results for query: <strong class="text-success">"{{ q }}"</strong>. 
+                <a href="{{ url_for('available_food') }}" class="text-decoration-none text-danger ms-2 fw-semibold">Clear Search</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Food Grid List -->
+    {% if foods %}
+        <div class="row g-4">
+            {% for f in foods %}
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0 d-flex flex-column">
+                        <!-- Top status bar inside card -->
+                        <div class="p-3 border-bottom bg-light d-flex justify-content-between align-items-center">
+                            <!-- Category Badge -->
+                            <div class="d-flex align-items-center gap-2">
+                                {% set type_class = 'type-veg' if f.food_type == 'Veg' else ('type-nonveg' if f.food_type == 'Non-Veg' else ('type-bakery' if f.food_type == 'Bakery' else 'type-other')) %}
+                                <span class="food-type-icon {{ type_class }}">
+                                    {% if f.food_type == 'Veg' %}🥦{% elif f.food_type == 'Non-Veg' %}🍗{% elif f.food_type == 'Bakery' %}🍰{% else %}🍱{% endif %}
+                                </span>
+                                <span class="small fw-bold text-capitalize text-dark">{{ f.food_type }}</span>
+                            </div>
+                            
+                            <!-- Expiry Countdown timer -->
+                            <div class="countdown-timer countdown-box" data-expiry="{{ f.expiry_datetime }}">
+                                <i class="bi bi-hourglass-split"></i> <span>Calculating...</span>
+                            </div>
+                        </div>
+
+                        <!-- Card Body details -->
+                        <div class="card-body p-4 flex-grow-1">
+                            <h4 class="fw-bold text-dark mb-2">{{ f.food_name }}</h4>
+                            <p class="text-muted small mb-3">{{ f.description if f.description else 'No extra description provided.' }}</p>
+                            
+                            <hr class="my-3 text-muted opacity-25">
+
+                            <!-- Core metrics list -->
+                            <div class="d-flex flex-column gap-2 mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted small"><i class="bi bi-boxes text-success me-2"></i>Quantity:</span>
+                                    <span class="fw-bold text-dark text-end">{{ f.quantity }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted small"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Area Zone:</span>
+                                    <span class="fw-semibold text-dark text-end">{{ f.location }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted small"><i class="bi bi-building text-info me-2"></i>Donor Org:</span>
+                                    <span class="fw-semibold text-dark text-end">{{ f.donor_name }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Footer Form submission -->
+                        <div class="card-footer bg-white p-4 border-top-0">
+                            <form method="post" action="{{ url_for('request_food', food_id=f.id) }}">
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted">Claim Message Notes</label>
+                                    <textarea name="message" class="form-control" rows="2" style="font-size: 0.85rem;" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100 py-2.5 shadow-sm">
+                                    <i class="bi bi-hand-index-thumb me-1"></i> Send Claim Request
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card p-5 text-center shadow-sm border-0">
+            <span class="fs-1 d-block mb-3">🧺</span>
+            <h5 class="fw-bold text-dark">No Food Available</h5>
+            <p class="text-muted small">All surplus listings are currently claimed or expired. Check back soon!</p>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-success btn-sm mt-2">Go to Dashboard</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function updateCountdowns() {
+        const timers = document.querySelectorAll('.countdown-timer');
+        const now = new Date().getTime();
+
+        timers.forEach(timer => {
+            const expiryStr = timer.getAttribute('data-expiry');
+            const expiryDate = new Date(expiryStr.replace(' ', 'T')).getTime();
+            const distance = expiryDate - now;
+
+            const span = timer.querySelector('span');
+
+            if (isNaN(distance) || distance < 0) {
+                span.textContent = 'Expired';
+                timer.className = 'countdown-timer countdown-box danger';
+                
+                // Find parent card's submit button and disable it
+                const parentCard = timer.closest('.card');
+                if (parentCard) {
+                    const submitBtn = parentCard.querySelector('button[type="submit"]');
+                    const textInput = parentCard.querySelector('textarea[name="message"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.className = 'btn btn-secondary w-100 py-2.5';
+                        submitBtn.innerHTML = '<i class="bi bi-clock"></i> Expired - Claim Closed';
+                    }
+                    if (textInput) {
+                        textInput.disabled = true;
+                    }
+                }
+            } else {
+                const hours = Math.floor(distance / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                let displayStr = '';
+                if (hours > 0) {
+                    displayStr += hours + 'h ';
+                }
+                displayStr += minutes + 'm ' + seconds + 's';
+
+                span.textContent = displayStr;
+
+                if (hours < 3) {
+                    timer.className = 'countdown-timer countdown-box danger';
+                } else if (hours < 12) {
+                    timer.className = 'countdown-timer countdown-box warning';
+                } else {
+                    timer.className = 'countdown-timer countdown-box success';
+                }
+            }
+        });
+    }
+
+    updateCountdowns();
+    setInterval(updateCountdowns, 1000);
+</script>
+{% endblock %}
